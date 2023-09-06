@@ -1,1 +1,120 @@
+# Finding null values in PropertyAddress column
 
+select *
+from
+housing.nashville
+where
+"PropertyAddress" is null
+order by "ParcelID";
+
+# Each ParcelID has only one PropertyAddress but more than one property could have same address if they have the same ParcelID therefore using selfjoin to populate them:
+
+select
+a."ParcelID", b."ParcelID",
+a."PropertyAddress", b."PropertyAddress" 
+from
+housing.nashville as a
+join
+housing.nashville as b 
+on a."ParcelID" = b."ParcelID"
+and a."UniqueID" <> b."UniqueID"
+where a."PropertyAddress" is null
+order by a."ParcelID";
+
+# Updating PropertyAddress:
+
+update housing.nashville as a
+set "PropertyAddress" = b."PropertyAddress"
+from
+housing.nashville as b 
+where a."ParcelID" = b."ParcelID"
+and a."UniqueID" <> b."UniqueID"
+and a."PropertyAddress" is null;
+
+# Checking Updated column(s):
+
+select *
+from
+housing.nashville
+where
+"PropertyAddress" is null
+order by "UniqueID";
+
+
+# Checking SoldAsVacant column for inconsistent data:
+
+select distinct "SoldAsVacant"
+from
+housing.nashville
+
+# Replacing y with yes and N with No in the SoldAsVacant column:
+
+update
+housing.nashville
+set "SoldAsVacant" = 
+case when "SoldAsVacant" = 'Y' 
+THEN 'Yes'
+ when "SoldAsVacant" = 'N' 
+ THEN 'No'
+ else "SoldAsVacant"
+ END
+
+ # Checking Updated column
+
+select
+distinct "SoldAsVacant"
+from
+housing.nashville;
+
+# Check "LandUse" for irregular data
+select distinct "LandUse"
+from
+housing.nashville;
+
+--Replacing 'VACANT RESIENTIAL LAND' with 'VACANT RESIDENTIAL LAND' in the SoldAsVacant column
+update
+housing.nashville
+set "LandUse" =
+case
+when "LandUse" = 'VACANT RESIENTIAL LAND'
+then 'VACANT RESIDENTIAL LAND'
+else "LandUse"
+END;
+
+# Checking Updates for LandUse
+select distinct
+"LandUse"
+from
+housing.nashville;
+
+
+# Breaking PropertyAddress into separate columns (address, city, state)
+select
+split_part("PropertyAddress", ',', 1), 
+split_part("PropertyAddress", ',', 2)
+from
+housing.nashville
+
+# Adding new column split_propertyaddress
+
+alter table
+housing.nashville
+add split_propertyaddress nchar(300)
+
+# Updating data in new column
+set split_propertyaddress = split_part("PropertyAddress", ',', 1)
+
+# Adding new column propertysplitcity
+
+alter table
+housing.nashville
+add propertysplitcity nchar(300)
+
+# Updating data in new column
+set propertysplitcity = split_part("PropertyAddress", ',', 2)
+
+# Checking updated table
+select
+*
+from
+housing.nashville
