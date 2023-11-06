@@ -12,6 +12,9 @@ This file consists of SQL queries executed on PostgreSQL which solve problems in
 
 # Data Analysis:
 This file consists of SQL queries executed on PostgreSQL analyzing the updated dataset after the Data Cleaning Process.
+
+# Screenshots of Questions Answered
+
 1. Total count of properties sold in each city
 
 ![Total_count_of_properties_sold_in_each_city](https://github.com/raj667/Nashville_Housing/assets/30209480/8ade666b-fb45-47ab-8143-7147941cb14f)
