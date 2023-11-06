@@ -63,7 +63,6 @@ group by 1
 order by 2 desc;
 
 ---- Average sale price of 'SINGLE FAMILY' properties in the bottom 20% of Sale Price sold in each city ----
-with low_income as(
 with avg_low_income as(
 select split_propertycity, "SalePrice" from housing.nashville
 where "LandUse" = 'SINGLE FAMILY'
