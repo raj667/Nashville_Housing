@@ -1,16 +1,16 @@
-# Total count of properties sold in each city
+---- Total count of properties sold in each city ----
 select split_propertycity, count(split_propertycity) as city_count 
 from housing.nashville
 group by 1
 order by 2 desc;
 
-# Total count of different kinds of properties sold
+---- Total count of different kinds of properties sold ----
 select "LandUse", count("LandUse") as land_count 
 from housing.nashville
 group by 1
 order by 2 desc;
 
-# Count of property type sold most in each city
+---- Count of property type sold most in each city ----
 with cte as(
 select *, rank() over (partition by split_propertycity order by "city_count" desc) as rnk from(
 select split_propertycity, "LandUse", count("LandUse") as city_count 
@@ -22,13 +22,13 @@ select split_propertycity, "LandUse", city_count from cte
 where rnk = 1
 order by city_count desc;
 
-# Average sale price of property in each city
+---- Average sale price of property in each city ----
 select split_propertycity, round(avg("SalePrice"),2) as avg_saleprice
 from housing.nashville
 group by 1
 order by 2 desc;
 
-# Average saleprice of the most sold property in each city
+---- Average saleprice of the most sold property in each city ----
 with avg_sale_price as(
 select *, rank() over (partition by split_propertycity order by avg_saleprice desc) as rnk from(
 select split_propertycity, "LandUse", round(avg("SalePrice"),2) as avg_saleprice
@@ -40,7 +40,7 @@ select split_propertycity, "LandUse", avg_saleprice from avg_sale_price
 where rnk =1
 order by 3 desc;
 
-# Count of 'SINGLE FAMILY' properties in the top 20% of Sale Price sold in each city
+---- Count of 'SINGLE FAMILY' properties in the top 20% of Sale Price sold in each city ----
 with high_income as(
 select split_propertycity, "SalePrice" from housing.nashville
 where "LandUse" = 'SINGLE FAMILY'
@@ -51,7 +51,7 @@ select split_propertycity, count(split_propertycity) as count_high_income from h
 group by 1
 order by 2 desc;
 
-# Count of 'SINGLE FAMILY' properties in the bottom 20% of Sale Price sold in each city
+---- Count of 'SINGLE FAMILY' properties in the bottom 20% of Sale Price sold in each city ----
 with low_income as(
 select split_propertycity, "SalePrice" from housing.nashville
 where "LandUse" = 'SINGLE FAMILY'
@@ -62,7 +62,7 @@ select split_propertycity, count(split_propertycity) as count_low_income from lo
 group by 1
 order by 2 desc;
 
-# Average sale price of 'SINGLE FAMILY' properties in the bottom 20% of Sale Price sold in each city
+---- Average sale price of 'SINGLE FAMILY' properties in the bottom 20% of Sale Price sold in each city ----
 with low_income as(
 with avg_low_income as(
 select split_propertycity, "SalePrice" from housing.nashville
@@ -74,7 +74,7 @@ select split_propertycity, round(avg("SalePrice"),2) as avg_low_income_sale from
 group by 1
 order by 2;
 
-# Average sale price of 'SINGLE FAMILY' properties in the top 20% of Sale Price sold in each city
+---- Average sale price of 'SINGLE FAMILY' properties in the top 20% of Sale Price sold in each city ----
 with avg_high_income as(
 select split_propertycity, "SalePrice" from housing.nashville
 where "LandUse" = 'SINGLE FAMILY'
